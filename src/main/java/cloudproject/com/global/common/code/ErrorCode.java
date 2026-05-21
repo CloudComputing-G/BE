@@ -15,7 +15,13 @@ public enum ErrorCode implements BaseCode {
     INVALID_JSON(HttpStatus.BAD_REQUEST, "C002", "요청 본문의 JSON 형식이 올바르지 않습니다."),
     METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "C405", "지원하지 않는 HTTP 메서드입니다."),
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "C401", "인증이 필요합니다."),
-    FORBIDDEN(HttpStatus.FORBIDDEN, "C403", "접근 권한이 없습니다.");
+    FORBIDDEN(HttpStatus.FORBIDDEN, "C403", "접근 권한이 없습니다."),
+
+    // Auth
+    EMAIL_ALREADY_EXISTS(HttpStatus.CONFLICT, "A001", "이미 사용 중인 이메일입니다."),
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "A002", "사용자를 찾을 수 없습니다."),
+    INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "A003", "비밀번호가 올바르지 않습니다."),
+    INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "A004", "유효하지 않은 토큰입니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
