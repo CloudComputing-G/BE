@@ -40,7 +40,7 @@ public class AssignmentService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.UNAUTHORIZED));
 
         Assignment assignment = Assignment.builder()
-                .classEntity(null) // classId로 Class 조회 필요 (아래 설명)
+                .classroom(null) // classId로 Class 조회 필요 (아래 설명)
                 .teacher(teacher)
                 .title(request.getTitle())
                 .subject(request.getSubject())
