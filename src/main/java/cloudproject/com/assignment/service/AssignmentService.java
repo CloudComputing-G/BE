@@ -75,24 +75,33 @@ public class AssignmentService {
     }
 
     // 반별 과제 목록 조회 (GET /assignments?classId=1)
-    public List<AssignmentResponse> getAssignments(Long classId, Long teacherId){
-        User teacher = userRepository.findById(teacherId).orElseThrow(() -> new BusinessException(ErrorCode.UNAUTHORIZED));
-
-        // 반 전체 학생 수
-        long totalCount = classStudentRepository.countByClassroom_ClassId(classId);
-        //반별 과제 목록
-        return assignmentRepository.findByClassroom_ClassIdAndTeacher(classId, teacher)
-                .stream()
-                .map(assignment -> {
-                    long submittedCount = submissionRepository
-                            .countByAssignment_AssignmentIdAndGradingStatusIn(
-                                    assignment.getAssignmentId(), List.of("PENDING", "DONE"));
-                    long gradedCount = submissionRepository
-                            .countByAssignment_AssignmentIdAndGradingStatus(
-                                    assignment.getAssignmentId(), "DONE");
-                    return AssignmentResponse.of(assignment, totalCount, submittedCount, gradedCount);
-                })
-                .collect(Collectors.toList());
+    public List<AssignmentResponse> getAssignments(Long classId,  Long userId, boolean isTeacher){
+        if (isTeacher) {
+            // 교사: 본인 과제 (DRAFT + PUBLISHED 전부)
+            User teacher = userRepository.findById(userId)
+                    .orElseThrow(() -> new BusinessException(ErrorCode.UNAUTHORIZED));
+            // 반 전체 학생 수
+            long totalCount = classStudentRepository.countByClassroom_ClassId(classId);
+            //반별 과제 목록
+            return assignmentRepository.findByClassroom_ClassIdAndTeacher(classId, teacher)
+                    .stream()
+                    .map(assignment -> {
+                        long submittedCount = submissionRepository
+                                .countByAssignment_AssignmentIdAndGradingStatusIn(
+                                        assignment.getAssignmentId(), List.of("PENDING", "DONE"));
+                        long gradedCount = submissionRepository
+                                .countByAssignment_AssignmentIdAndGradingStatus(
+                                        assignment.getAssignmentId(), "DONE");
+                        return AssignmentResponse.of(assignment, totalCount, submittedCount, gradedCount);
+                    })
+                    .collect(Collectors.toList());
+        }else {
+            // 학생: PUBLISHED 과제만
+            return assignmentRepository.findByClassroom_ClassIdAndStatus(classId, "PUBLISHED")
+                    .stream()
+                    .map(AssignmentResponse::from)
+                    .collect(Collectors.toList());
+        }
     }
 
     // 과제 상세 조회 (GET /assignments/{id})

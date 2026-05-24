@@ -56,11 +56,15 @@ public class AssignmentController {
     @GetMapping
     public ResponseEntity<ApiResponse<List<AssignmentResponse>>> getAssignments(
             @RequestParam Long classId,
-            @AuthenticationPrincipal Long teacherId
+            @AuthenticationPrincipal Long userId,
+            Authentication authentication
     ) {
-        List<AssignmentResponse> response = assignmentService.getAssignments(classId, teacherId);
+        boolean isTeacher = authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_TEACHER"));
+        List<AssignmentResponse> response = assignmentService.getAssignments(classId, userId, isTeacher);
         return ResponseEntity.ok(ApiResponse.success(SuccessCode.ASSIGNMENTS_FETCHED, response));
     }
+
 
     // 과제 상세 조회
     // GET /api/assignments/{id}
