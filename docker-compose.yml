@@ -1,0 +1,11 @@
+version: "3.8"
+
+services:
+  app:
+    image: ${DOCKERHUB_USERNAME}/checkmate:latest
+    container_name: checkmate-app
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+    volumes:
+      - ./logs:/apps/logs

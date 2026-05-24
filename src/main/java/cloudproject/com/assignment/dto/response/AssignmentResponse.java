@@ -23,7 +23,10 @@ public class AssignmentResponse {
     private long gradedCount;      // 채점 완료 수
     private long notSubmittedCount; // 미제출 수
 
-    //Entity -> DTO
+    private String problemUrl;
+    private String answerUrl;
+
+    //단순 변환 - 목록용
     public static AssignmentResponse from(Assignment assignment){
         AssignmentResponse dto = new AssignmentResponse();
         dto.assignmentId= assignment.getAssignmentId();
@@ -39,6 +42,13 @@ public class AssignmentResponse {
         return dto;
     }
 
+    // url 포함 (상세 조회용)
+    public static AssignmentResponse withUrl(Assignment assignment,String problemUrl,String answerUrl){
+        AssignmentResponse dto = from(assignment);
+        dto.problemUrl=problemUrl;
+        dto.answerUrl=answerUrl;
+        return dto;
+    }
     // 집계 포함 (목록 조회용)
     public static AssignmentResponse of(Assignment assignment,
                                         long totalCount,

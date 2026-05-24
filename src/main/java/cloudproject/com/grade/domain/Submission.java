@@ -3,15 +3,16 @@ package cloudproject.com.grade.domain;
 import cloudproject.com.assignment.domain.Assignment;
 import cloudproject.com.auth.domain.User;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "submissions")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder
 public class Submission {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,8 +37,18 @@ public class Submission {
         this.submittedAt = LocalDateTime.now();
     }
 
-    public void confirmUpload(String s3Key) {
+    public static Submission create(Assignment assignment, User student) {
+        Submission s = new Submission();
+        s.assignment = assignment;
+        s.student = student;
+        return s;
+    }
+
+    public void updateS3Key(String s3Key) {
         this.s3Key = s3Key;
+    }
+
+    public void confirmUpload() {
         this.gradingStatus = "PENDING";
     }
 }

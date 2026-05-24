@@ -11,10 +11,12 @@ import cloudproject.com.assignment.repository.AssignmentRepository;
 import cloudproject.com.assignment.repository.QuestionRepository;
 import cloudproject.com.auth.domain.User;
 import cloudproject.com.auth.repository.UserRepository;
+import cloudproject.com.classroom.domain.Classroom;
 import cloudproject.com.classroom.repository.ClassStudentRepository;
 import cloudproject.com.classroom.repository.ClassroomRepository;
 import cloudproject.com.global.common.code.ErrorCode;
 import cloudproject.com.global.error.BusinessException;
+import cloudproject.com.global.s3.S3Service;
 import cloudproject.com.grade.repository.SubmissionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -32,15 +34,20 @@ public class AssignmentService {
     private final SubmissionRepository submissionRepository;
     private final ClassStudentRepository classStudentRepository;
     private final UserRepository userRepository;
+    private final ClassroomRepository classroomRepository;
+    private final S3Service s3Service;
 
-    @Transactional //쓰기 post/assignments 과제 생성
+    @Transactional //쓰기 post/assignments 과제 생성 - 초안저장
     public AssignmentResponse createAssignment(AssignmentCreateRequest request, Long teacherId){
 
         User teacher = userRepository.findById(teacherId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.UNAUTHORIZED));
 
+        Classroom classroom = classroomRepository.findById(request.getClassId())
+                .orElseThrow(()->new BusinessException(ErrorCode.CLASSROOM_NOT_FOUND));
+
         Assignment assignment = Assignment.builder()
-                .classroom(null) // classId로 Class 조회 필요 (아래 설명)
+                .classroom(classroom) // classId로 Class 조회 필요
                 .teacher(teacher)
                 .title(request.getTitle())
                 .subject(request.getSubject())
@@ -69,8 +76,7 @@ public class AssignmentService {
 
     // 반별 과제 목록 조회 (GET /assignments?classId=1)
     public List<AssignmentResponse> getAssignments(Long classId, Long teacherId){
-        User teacher = userRepository.findById(teacherId)
-                .orElseThrow(() -> new BusinessException(ErrorCode.UNAUTHORIZED));
+        User teacher = userRepository.findById(teacherId).orElseThrow(() -> new BusinessException(ErrorCode.UNAUTHORIZED));
 
         // 반 전체 학생 수
         long totalCount = classStudentRepository.countByClassroom_ClassId(classId);
@@ -79,7 +85,8 @@ public class AssignmentService {
                 .stream()
                 .map(assignment -> {
                     long submittedCount = submissionRepository
-                            .countByAssignment_AssignmentId(assignment.getAssignmentId());
+                            .countByAssignment_AssignmentIdAndGradingStatusIn(
+                                    assignment.getAssignmentId(), List.of("PENDING", "DONE"));
                     long gradedCount = submissionRepository
                             .countByAssignment_AssignmentIdAndGradingStatus(
                                     assignment.getAssignmentId(), "DONE");
@@ -87,11 +94,23 @@ public class AssignmentService {
                 })
                 .collect(Collectors.toList());
     }
+
     // 과제 상세 조회 (GET /assignments/{id})
-    public AssignmentResponse getAssignment(Long assignmentId){
+    public AssignmentResponse getAssignment(Long assignmentId,boolean isTeacher){
         Assignment assignment = assignmentRepository.findById(assignmentId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.ASSIGNMENT_NOT_FOUND));
-        return AssignmentResponse.from(assignment);
+
+        String problemUrl = assignment.getProblemS3Key() != null
+                ? s3Service.getDownloadUrl(assignment.getProblemS3Key())
+                : null;
+
+        String answerUrl = null;
+
+        if (isTeacher && assignment.getAnswerS3Key() != null) {
+            answerUrl = s3Service.getDownloadUrl(assignment.getAnswerS3Key());
+        }
+
+        return AssignmentResponse.withUrl(assignment, problemUrl, answerUrl);
     }
 
     //과제 수정 (put/assignments/{id})
@@ -141,7 +160,7 @@ public class AssignmentService {
         question.update(request.getAnswer(), request.getGradingCriteria());
     }
 
-    // 과제 게시 (POST /assignments/{id}/publish)
+    // 과제 게시 (POST /assignments/{id}/publish) 게시까지
     @Transactional
     public AssignmentResponse publishAssignment(Long assignmentId, Long teacherId) {
 
@@ -156,7 +175,7 @@ public class AssignmentService {
             throw new BusinessException(ErrorCode.ASSIGNMENT_ALREADY_PUBLISHED);
         }
 
-        assignment.publish(); // 상태변경
+        assignment.publish();
         return AssignmentResponse.from(assignment);
     }
 

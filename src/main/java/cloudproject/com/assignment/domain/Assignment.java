@@ -69,4 +69,12 @@ public class Assignment {
         this.title = title;
         this.dueDate = dueDate;
     }
+
+    public void updateProblemS3Key(String s3Key) {
+        this.problemS3Key = s3Key;
+    }
+
+    public void updateAnswerS3Key(String s3Key) {
+        this.answerS3Key = s3Key;
+    }
 }
