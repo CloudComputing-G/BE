@@ -33,7 +33,8 @@ public enum SuccessCode implements BaseCode {
     REGRADE_REQUEST_SUCCESS(HttpStatus.OK, "S103", "재채점이 요청되었습니다."),
     REGRADE_CONFIRM_SUCCESS(HttpStatus.OK, "S104", "재채점 결과가 확정되었습니다."),
     REGRADE_REQUEST_LIST_FETCH_SUCCESS(HttpStatus.OK, "S105", "재채점 요청 목록을 조회했습니다."),
-    LEADERBOARD_FETCH_SUCCESS(HttpStatus.OK, "S106", "과제 리더보드를 조회했습니다.");
+    LEADERBOARD_FETCH_SUCCESS(HttpStatus.OK, "S106", "과제 리더보드를 조회했습니다."),
+    GRADING_TRIGGERED(HttpStatus.OK, "S107", "채점이 트리거되었습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
