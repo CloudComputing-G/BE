@@ -26,8 +26,16 @@ public class Submission {
     private User student;
 
     private String s3Key;
-    private String gradingStatus;
+
+    @Enumerated(EnumType.STRING)
+    private GradingStatus gradingStatus;
+
     private Integer totalScore;
     private LocalDateTime submittedAt;
     private LocalDateTime gradedAt;
+    private String failReason;
+
+    public void updateTotalScore(int totalScore) {
+        this.totalScore = totalScore;
+    }
 }

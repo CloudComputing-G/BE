@@ -21,7 +21,17 @@ public enum ErrorCode implements BaseCode {
     EMAIL_ALREADY_EXISTS(HttpStatus.CONFLICT, "A001", "이미 사용 중인 이메일입니다."),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "A002", "사용자를 찾을 수 없습니다."),
     INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "A003", "비밀번호가 올바르지 않습니다."),
-    INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "A004", "유효하지 않은 토큰입니다.");
+    INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "A004", "유효하지 않은 토큰입니다."),
+
+    // Grade
+    SUBMISSION_NOT_FOUND(HttpStatus.NOT_FOUND, "G001", "존재하지 않는 제출물입니다."),
+    SUBMISSION_ACCESS_DENIED(HttpStatus.FORBIDDEN, "G002", "해당 제출물에 접근할 권한이 없습니다."),
+    QUESTION_RESULT_NOT_FOUND(HttpStatus.NOT_FOUND, "G003", "해당 문항의 채점 결과를 찾을 수 없습니다."),
+    SUBMISSION_NOT_GRADED(HttpStatus.CONFLICT, "G004", "채점이 완료되지 않은 제출물에는 재채점을 요청할 수 없습니다."),
+    REGRADE_NOT_PENDING(HttpStatus.CONFLICT, "G005", "재채점 요청 상태(PENDING)가 아닌 항목은 확정할 수 없습니다."),
+    INVALID_SCORE(HttpStatus.BAD_REQUEST, "G006", "점수는 0 이상 만점 이하여야 합니다."),
+    ASSIGNMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "G007", "존재하지 않는 과제입니다."),
+    ASSIGNMENT_ACCESS_DENIED(HttpStatus.FORBIDDEN, "G008", "해당 과제에 접근할 권한이 없습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;

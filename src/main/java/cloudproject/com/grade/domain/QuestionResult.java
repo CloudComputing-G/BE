@@ -23,12 +23,30 @@ public class QuestionResult {
     @JoinColumn(name = "question_id")
     private Question question;
 
-    private String result;
+    @Enumerated(EnumType.STRING)
+    private Result result;
+
     private Integer score;
 
     @Column(columnDefinition = "TEXT")
     private String reason;
 
     private String imageUrl;
-    private String regradeStatus;
+
+    @Enumerated(EnumType.STRING)
+    private RegradeStatus regradeStatus;
+
+    public void requestRegrade() {
+        this.regradeStatus = RegradeStatus.PENDING;
+    }
+
+    public void rejectRegrade() {
+        this.regradeStatus = RegradeStatus.DONE;
+    }
+
+    public void confirmRegradeWithScore(int newScore, Result newResult) {
+        this.score = newScore;
+        this.result = newResult;
+        this.regradeStatus = RegradeStatus.DONE;
+    }
 }
