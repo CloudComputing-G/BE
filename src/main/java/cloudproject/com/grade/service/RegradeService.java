@@ -3,7 +3,6 @@ package cloudproject.com.grade.service;
 import cloudproject.com.assignment.domain.Assignment;
 import cloudproject.com.assignment.repository.AssignmentRepository;
 import cloudproject.com.auth.domain.Role;
-import cloudproject.com.grade.domain.GradingStatus;
 import cloudproject.com.grade.domain.QuestionResult;
 import cloudproject.com.grade.domain.RegradeStatus;
 import cloudproject.com.grade.domain.Result;
@@ -18,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static cloudproject.com.global.common.code.ErrorCode.ASSIGNMENT_ACCESS_DENIED;
+import static cloudproject.com.global.common.code.ErrorCode.ASSIGNMENT_FORBIDDEN;
 import static cloudproject.com.global.common.code.ErrorCode.ASSIGNMENT_NOT_FOUND;
 import static cloudproject.com.global.common.code.ErrorCode.INVALID_SCORE;
 import static cloudproject.com.global.common.code.ErrorCode.QUESTION_RESULT_NOT_FOUND;
@@ -29,6 +28,8 @@ import static cloudproject.com.global.common.code.ErrorCode.SUBMISSION_NOT_GRADE
 @Service
 @RequiredArgsConstructor
 public class RegradeService {
+
+    private static final String GRADING_STATUS_DONE = "DONE";
 
     private final QuestionResultRepository questionResultRepository;
     private final AssignmentRepository assignmentRepository;
@@ -49,7 +50,7 @@ public class RegradeService {
             throw new BusinessException(SUBMISSION_ACCESS_DENIED);
         }
 
-        if (questionResult.getSubmission().getGradingStatus() != GradingStatus.DONE) {
+        if (!GRADING_STATUS_DONE.equals(questionResult.getSubmission().getGradingStatus())) {
             throw new BusinessException(SUBMISSION_NOT_GRADED);
         }
 
@@ -111,14 +112,14 @@ public class RegradeService {
             Long assignmentId, Long currentUserId, Role currentRole
     ) {
         if (currentRole != Role.TEACHER) {
-            throw new BusinessException(ASSIGNMENT_ACCESS_DENIED);
+            throw new BusinessException(ASSIGNMENT_FORBIDDEN);
         }
 
         Assignment assignment = assignmentRepository.findByIdWithTeacher(assignmentId)
                 .orElseThrow(() -> new BusinessException(ASSIGNMENT_NOT_FOUND));
 
         if (!assignment.getTeacher().getUserId().equals(currentUserId)) {
-            throw new BusinessException(ASSIGNMENT_ACCESS_DENIED);
+            throw new BusinessException(ASSIGNMENT_FORBIDDEN);
         }
 
         List<QuestionResult> pending = questionResultRepository

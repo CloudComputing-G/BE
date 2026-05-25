@@ -1,14 +1,14 @@
 package cloudproject.com.assignment.domain;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Table(name = "questions")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder
 public class Question {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,4 +29,9 @@ public class Question {
 
     private Integer maxScore;
     private Integer orderNum;
+
+    public void update(String answer, String gradingCriteria) {
+        this.answer = answer;
+        this.gradingCriteria = gradingCriteria;
+    }
 }

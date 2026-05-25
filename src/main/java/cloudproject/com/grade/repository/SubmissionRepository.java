@@ -42,4 +42,16 @@ public interface SubmissionRepository extends JpaRepository<Submission, Long> {
             order by s.submittedAt desc
             """)
     List<Submission> findAllByAssignmentIdWithStudent(@Param("assignmentId") Long assignmentId);
+
+    // PENDING 이상(실제 제출된) 수
+    long countByAssignment_AssignmentIdAndGradingStatusIn(Long assignmentId, List<String> statuses);
+
+    // 과제별 특정 상태 수 (DONE = 채점완료)
+    long countByAssignment_AssignmentIdAndGradingStatus(Long assignmentId, String gradingStatus);
+
+    // confirm용
+    Optional<Submission> findBySubmissionIdAndAssignment_AssignmentId(Long submissionId, Long assignmentId);
+
+    // 중복 제출 체크
+    Optional<Submission> findByAssignment_AssignmentIdAndStudent_UserId(Long assignmentId, Long studentId);
 }

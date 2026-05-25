@@ -1,6 +1,5 @@
 package cloudproject.com.grade.dto;
 
-import cloudproject.com.grade.domain.GradingStatus;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.time.LocalDateTime;
@@ -19,7 +18,7 @@ public record LeaderboardResponse(
             String studentName,
             Integer totalScore,
             Double correctRate,
-            GradingStatus gradingStatus,
+            String gradingStatus,
             LocalDateTime submittedAt
     ) {
     }

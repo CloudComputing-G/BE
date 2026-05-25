@@ -4,7 +4,6 @@ import cloudproject.com.assignment.domain.Assignment;
 import cloudproject.com.assignment.repository.AssignmentRepository;
 import cloudproject.com.assignment.repository.QuestionRepository;
 import cloudproject.com.auth.domain.Role;
-import cloudproject.com.grade.domain.GradingStatus;
 import cloudproject.com.grade.domain.Submission;
 import cloudproject.com.grade.dto.LeaderboardResponse;
 import cloudproject.com.grade.repository.SubmissionRepository;
@@ -21,12 +20,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import static cloudproject.com.global.common.code.ErrorCode.ASSIGNMENT_ACCESS_DENIED;
+import static cloudproject.com.global.common.code.ErrorCode.ASSIGNMENT_FORBIDDEN;
 import static cloudproject.com.global.common.code.ErrorCode.ASSIGNMENT_NOT_FOUND;
 
 @Service
 @RequiredArgsConstructor
 public class LeaderboardService {
+
+    private static final String GRADING_STATUS_DONE = "DONE";
 
     private final AssignmentRepository assignmentRepository;
     private final SubmissionRepository submissionRepository;
@@ -35,14 +36,14 @@ public class LeaderboardService {
     @Transactional(readOnly = true)
     public LeaderboardResponse getLeaderboard(Long assignmentId, Long currentUserId, Role currentRole) {
         if (currentRole != Role.TEACHER) {
-            throw new BusinessException(ASSIGNMENT_ACCESS_DENIED);
+            throw new BusinessException(ASSIGNMENT_FORBIDDEN);
         }
 
         Assignment assignment = assignmentRepository.findByIdWithTeacher(assignmentId)
                 .orElseThrow(() -> new BusinessException(ASSIGNMENT_NOT_FOUND));
 
         if (!assignment.getTeacher().getUserId().equals(currentUserId)) {
-            throw new BusinessException(ASSIGNMENT_ACCESS_DENIED);
+            throw new BusinessException(ASSIGNMENT_FORBIDDEN);
         }
 
         Long maxScoreSum = questionRepository.sumMaxScoreByAssignmentId(assignmentId);
@@ -53,7 +54,7 @@ public class LeaderboardService {
         );
 
         List<Submission> done = latestPerStudent.stream()
-                .filter(s -> s.getGradingStatus() == GradingStatus.DONE)
+                .filter(s -> GRADING_STATUS_DONE.equals(s.getGradingStatus()))
                 .sorted(Comparator.comparing(
                         Submission::getTotalScore,
                         Comparator.nullsLast(Comparator.reverseOrder())
@@ -61,7 +62,7 @@ public class LeaderboardService {
                 .toList();
 
         List<Submission> others = latestPerStudent.stream()
-                .filter(s -> s.getGradingStatus() != GradingStatus.DONE)
+                .filter(s -> !GRADING_STATUS_DONE.equals(s.getGradingStatus()))
                 .sorted(Comparator.comparing(Submission::getSubmittedAt))
                 .toList();
 

@@ -17,6 +17,16 @@ public enum ErrorCode implements BaseCode {
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "C401", "인증이 필요합니다."),
     FORBIDDEN(HttpStatus.FORBIDDEN, "C403", "접근 권한이 없습니다."),
 
+    // Assignment
+    ASSIGNMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "AS001", "과제를 찾을 수 없습니다."),
+    ASSIGNMENT_ALREADY_PUBLISHED(HttpStatus.BAD_REQUEST, "AS002", "이미 게시된 과제입니다."),
+    ASSIGNMENT_FORBIDDEN(HttpStatus.FORBIDDEN, "AS003", "해당 과제에 대한 권한이 없습니다."),
+
+    QUESTION_NOT_FOUND(HttpStatus.NOT_FOUND, "Q001", "문항을 찾을 수 없습니다."),
+    SUBMISSION_NOT_FOUND(HttpStatus.NOT_FOUND, "S001", "제출 정보를 찾을 수 없습니다."),
+    S3_UPLOAD_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "S002", "파일 업로드 URL 생성에 실패했습니다."),
+
+    CLASSROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "CL001", "클래스를 찾을 수 없습니다."),
     // Auth
     EMAIL_ALREADY_EXISTS(HttpStatus.CONFLICT, "A001", "이미 사용 중인 이메일입니다."),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "A002", "사용자를 찾을 수 없습니다."),
@@ -24,14 +34,11 @@ public enum ErrorCode implements BaseCode {
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "A004", "유효하지 않은 토큰입니다."),
 
     // Grade
-    SUBMISSION_NOT_FOUND(HttpStatus.NOT_FOUND, "G001", "존재하지 않는 제출물입니다."),
     SUBMISSION_ACCESS_DENIED(HttpStatus.FORBIDDEN, "G002", "해당 제출물에 접근할 권한이 없습니다."),
     QUESTION_RESULT_NOT_FOUND(HttpStatus.NOT_FOUND, "G003", "해당 문항의 채점 결과를 찾을 수 없습니다."),
     SUBMISSION_NOT_GRADED(HttpStatus.CONFLICT, "G004", "채점이 완료되지 않은 제출물에는 재채점을 요청할 수 없습니다."),
     REGRADE_NOT_PENDING(HttpStatus.CONFLICT, "G005", "재채점 요청 상태(PENDING)가 아닌 항목은 확정할 수 없습니다."),
-    INVALID_SCORE(HttpStatus.BAD_REQUEST, "G006", "점수는 0 이상 만점 이하여야 합니다."),
-    ASSIGNMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "G007", "존재하지 않는 과제입니다."),
-    ASSIGNMENT_ACCESS_DENIED(HttpStatus.FORBIDDEN, "G008", "해당 과제에 접근할 권한이 없습니다.");
+    INVALID_SCORE(HttpStatus.BAD_REQUEST, "G006", "점수는 0 이상 만점 이하여야 합니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
