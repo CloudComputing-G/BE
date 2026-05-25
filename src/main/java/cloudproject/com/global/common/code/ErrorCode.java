@@ -17,6 +17,16 @@ public enum ErrorCode implements BaseCode {
     UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "C401", "인증이 필요합니다."),
     FORBIDDEN(HttpStatus.FORBIDDEN, "C403", "접근 권한이 없습니다."),
 
+    // Assignment
+    ASSIGNMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "AS001", "과제를 찾을 수 없습니다."),
+    ASSIGNMENT_ALREADY_PUBLISHED(HttpStatus.BAD_REQUEST, "AS002", "이미 게시된 과제입니다."),
+    ASSIGNMENT_FORBIDDEN(HttpStatus.FORBIDDEN, "AS003", "해당 과제에 대한 권한이 없습니다."),
+
+    QUESTION_NOT_FOUND(HttpStatus.NOT_FOUND, "Q001", "문항을 찾을 수 없습니다."),
+    SUBMISSION_NOT_FOUND(HttpStatus.NOT_FOUND, "S001", "제출 정보를 찾을 수 없습니다."),
+    S3_UPLOAD_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "S002", "파일 업로드 URL 생성에 실패했습니다."),
+
+    CLASSROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "CL001", "클래스를 찾을 수 없습니다."),
     // Auth
     EMAIL_ALREADY_EXISTS(HttpStatus.CONFLICT, "A001", "이미 사용 중인 이메일입니다."),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "A002", "사용자를 찾을 수 없습니다."),

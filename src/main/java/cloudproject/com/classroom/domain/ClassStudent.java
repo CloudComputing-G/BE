@@ -25,4 +25,9 @@ public class ClassStudent {
     private User student;
 
     private LocalDateTime joinedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        this.joinedAt = LocalDateTime.now();
+    }
 }
