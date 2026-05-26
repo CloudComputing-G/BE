@@ -30,4 +30,11 @@ public class ClassStudent {
     protected void onCreate() {
         this.joinedAt = LocalDateTime.now();
     }
+
+    public static ClassStudent create(Classroom classroom, User student) {
+        ClassStudent cs = new ClassStudent();
+        cs.classroom = classroom;
+        cs.student = student;
+        return cs;
+    }
 }

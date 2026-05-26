@@ -29,7 +29,8 @@ public enum SuccessCode implements BaseCode {
     CLASSROOM_FETCHED(HttpStatus.OK, "CL002", "반 조회가 완료되었습니다."),
     CLASSROOMS_FETCHED(HttpStatus.OK, "CL003", "반 목록 조회가 완료되었습니다."),
     CLASSROOM_UPDATED(HttpStatus.OK, "CL004", "반 정보가 수정되었습니다."),
-    CLASSROOM_DELETED(HttpStatus.OK, "CL005", "반이 삭제되었습니다.");
+    CLASSROOM_DELETED(HttpStatus.OK, "CL005", "반이 삭제되었습니다."),
+    STUDENTS_ADDED(HttpStatus.CREATED, "CL006", "학생이 반에 추가되었습니다.");
     private final HttpStatus httpStatus;
     private final String code;
     private final String message;

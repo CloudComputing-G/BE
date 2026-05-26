@@ -1,11 +1,15 @@
 package cloudproject.com.classroom.service;
 
+import cloudproject.com.auth.domain.Role;
 import cloudproject.com.auth.domain.User;
 import cloudproject.com.auth.repository.UserRepository;
 import cloudproject.com.classroom.domain.Classroom;
+import cloudproject.com.classroom.domain.ClassStudent;
 import cloudproject.com.classroom.dto.request.ClassroomCreateRequest;
 import cloudproject.com.classroom.dto.request.ClassroomUpdateRequest;
+import cloudproject.com.classroom.dto.request.ClassStudentAddRequest;
 import cloudproject.com.classroom.dto.response.ClassroomResponse;
+import cloudproject.com.classroom.dto.response.ClassStudentResponse;
 import cloudproject.com.classroom.repository.ClassStudentRepository;
 import cloudproject.com.classroom.repository.ClassroomRepository;
 import cloudproject.com.global.common.code.ErrorCode;
@@ -102,6 +106,39 @@ public class ClassroomService {
         }
 
         classroomRepository.delete(classroom);
+    }
+
+    // 학생 추가 (선생님만 가능, 본인 반만)
+    // 이메일 목록으로 여러 학생을 한 번에 추가할 수 있음
+    @Transactional
+    public List<ClassStudentResponse> addStudents(Long classId, ClassStudentAddRequest request, Long teacherId) {
+        Classroom classroom = classroomRepository.findById(classId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.CLASSROOM_NOT_FOUND));
+
+        if (!classroom.getTeacher().getUserId().equals(teacherId)) {
+            throw new BusinessException(ErrorCode.CLASSROOM_FORBIDDEN);
+        }
+
+        return request.getStudentEmails().stream()
+                .map(email -> {
+                    // 사용자 존재 여부 확인
+                    User student = userRepository.findByEmail(email)
+                            .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+
+                    // 학생 계정인지 확인
+                    if (student.getRole() != Role.STUDENT) {
+                        throw new BusinessException(ErrorCode.NOT_A_STUDENT);
+                    }
+
+                    // 이미 등록된 학생인지 확인
+                    if (classStudentRepository.existsByClassroom_ClassIdAndStudent_UserId(classId, student.getUserId())) {
+                        throw new BusinessException(ErrorCode.STUDENT_ALREADY_ENROLLED);
+                    }
+
+                    ClassStudent classStudent = ClassStudent.create(classroom, student);
+                    return ClassStudentResponse.from(classStudentRepository.save(classStudent));
+                })
+                .collect(Collectors.toList());
     }
 
     // 접근 권한 확인 헬퍼

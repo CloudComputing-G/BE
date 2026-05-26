@@ -1,7 +1,9 @@
 package cloudproject.com.classroom.controller;
 
+import cloudproject.com.classroom.dto.request.ClassStudentAddRequest;
 import cloudproject.com.classroom.dto.request.ClassroomCreateRequest;
 import cloudproject.com.classroom.dto.request.ClassroomUpdateRequest;
+import cloudproject.com.classroom.dto.response.ClassStudentResponse;
 import cloudproject.com.classroom.dto.response.ClassroomResponse;
 import cloudproject.com.classroom.service.ClassroomService;
 import cloudproject.com.global.common.code.SuccessCode;
@@ -158,6 +160,48 @@ public class ClassroomController {
     ) {
         ClassroomResponse response = classroomService.updateClassroom(classId, request, teacherId);
         return ResponseEntity.ok(cloudproject.com.global.common.ApiResponse.success(SuccessCode.CLASSROOM_UPDATED, response));
+    }
+
+    // ──────────────────────────────────────────────────
+    // 학생 추가
+    // ──────────────────────────────────────────────────
+    @Operation(
+            summary = "반에 학생 추가",
+            description = """
+                    학생 이메일 목록으로 반에 학생을 추가합니다.
+                    **해당 반을 담당하는 선생님만 사용 가능합니다.**
+                    - 이메일 목록으로 여러 명을 한 번에 추가할 수 있습니다.
+                    - 이미 등록된 학생 이메일이 포함된 경우 `409` 오류가 발생합니다.
+                    - 학생 계정이 아닌 이메일이 포함된 경우 `400` 오류가 발생합니다.
+                    """
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "201",
+                    description = "학생 추가 성공",
+                    content = @Content(schema = @Schema(implementation = ClassStudentResponse.class))
+            ),
+            @ApiResponse(responseCode = "400", description = "입력값 오류 또는 학생 계정이 아님"),
+            @ApiResponse(responseCode = "401", description = "인증 토큰 없음 또는 만료"),
+            @ApiResponse(responseCode = "403", description = "해당 반에 대한 권한 없음"),
+            @ApiResponse(responseCode = "404", description = "반 또는 사용자를 찾을 수 없음"),
+            @ApiResponse(responseCode = "409", description = "이미 등록된 학생")
+    })
+    @PostMapping("/{classId}/students")
+    public ResponseEntity<cloudproject.com.global.common.ApiResponse<List<ClassStudentResponse>>> addStudents(
+            @Parameter(description = "학생을 추가할 반 ID", required = true, example = "1")
+            @PathVariable Long classId,
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "추가할 학생 이메일 목록",
+                    required = true,
+                    content = @Content(schema = @Schema(implementation = ClassStudentAddRequest.class))
+            )
+            @Valid @RequestBody ClassStudentAddRequest request,
+            @Parameter(hidden = true) @AuthenticationPrincipal Long teacherId
+    ) {
+        List<ClassStudentResponse> response = classroomService.addStudents(classId, request, teacherId);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(cloudproject.com.global.common.ApiResponse.success(SuccessCode.STUDENTS_ADDED, response));
     }
 
     // ──────────────────────────────────────────────────
