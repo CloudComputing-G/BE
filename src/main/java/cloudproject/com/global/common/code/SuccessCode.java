@@ -23,7 +23,13 @@ public enum SuccessCode implements BaseCode {
     SUBMISSION_CONFIRMED(HttpStatus.OK, "S017", "제출이 완료되었습니다."),
     QUESTION_UPDATED(HttpStatus.OK, "S018", "문항이 수정되었습니다."),
     ASSIGNMENT_FETCHED(HttpStatus.OK, "S019", "과제 조회가 완료되었습니다."),
-    ASSIGNMENTS_FETCHED(HttpStatus.OK, "S020", "과제 목록 조회가 완료되었습니다.");
+    ASSIGNMENTS_FETCHED(HttpStatus.OK, "S020", "과제 목록 조회가 완료되었습니다."),
+    // Classroom
+    CLASSROOM_CREATED(HttpStatus.CREATED, "CL001", "반이 생성되었습니다."),
+    CLASSROOM_FETCHED(HttpStatus.OK, "CL002", "반 조회가 완료되었습니다."),
+    CLASSROOMS_FETCHED(HttpStatus.OK, "CL003", "반 목록 조회가 완료되었습니다."),
+    CLASSROOM_UPDATED(HttpStatus.OK, "CL004", "반 정보가 수정되었습니다."),
+    CLASSROOM_DELETED(HttpStatus.OK, "CL005", "반이 삭제되었습니다.");
     private final HttpStatus httpStatus;
     private final String code;
     private final String message;

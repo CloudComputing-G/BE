@@ -27,6 +27,7 @@ public enum ErrorCode implements BaseCode {
     S3_UPLOAD_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "S002", "파일 업로드 URL 생성에 실패했습니다."),
 
     CLASSROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "CL001", "클래스를 찾을 수 없습니다."),
+    CLASSROOM_FORBIDDEN(HttpStatus.FORBIDDEN, "CL002", "해당 반에 대한 권한이 없습니다."),
     // Auth
     EMAIL_ALREADY_EXISTS(HttpStatus.CONFLICT, "A001", "이미 사용 중인 이메일입니다."),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "A002", "사용자를 찾을 수 없습니다."),
