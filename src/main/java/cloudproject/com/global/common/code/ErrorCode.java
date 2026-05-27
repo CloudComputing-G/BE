@@ -34,7 +34,11 @@ public enum ErrorCode implements BaseCode {
     EMAIL_ALREADY_EXISTS(HttpStatus.CONFLICT, "A001", "이미 사용 중인 이메일입니다."),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "A002", "사용자를 찾을 수 없습니다."),
     INVALID_PASSWORD(HttpStatus.UNAUTHORIZED, "A003", "비밀번호가 올바르지 않습니다."),
-    INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "A004", "유효하지 않은 토큰입니다.");
+    INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "A004", "유효하지 않은 토큰입니다."),
+    // WrongNote
+    WRONG_NOTE_NOT_FOUND(HttpStatus.NOT_FOUND, "WN001", "오답노트를 찾을 수 없습니다."),
+    // Chat
+    BEDROCK_INVOKE_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "CH001", "AI 튜터 호출에 실패했습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;
