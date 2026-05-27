@@ -119,7 +119,7 @@ public class AssignmentService {
             answerUrl = s3Service.getDownloadUrl(assignment.getAnswerS3Key());
         }
 
-        return AssignmentResponse.withUrl(assignment, problemUrl, answerUrl);
+        return AssignmentResponse.withUrl(assignment, problemUrl, answerUrl,isTeacher);
     }
 
     //과제 수정 (put/assignments/{id})

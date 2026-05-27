@@ -42,19 +42,36 @@ public class AssignmentResponse {
         return dto;
     }
 
+    //교사용 변환
+    public static AssignmentResponse fromTeacher(Assignment assignment){
+        AssignmentResponse dto = new AssignmentResponse();
+        dto.assignmentId= assignment.getAssignmentId();
+        dto.title = assignment.getTitle();
+        dto.subject = assignment.getSubject();
+        dto.status = assignment.getStatus();
+        dto.dueDate = assignment.getDueDate();
+        dto.createdAt = assignment.getCreatedAt();
+        // questions 리스트도 변환
+        dto.questions = assignment.getQuestions().stream()
+                .map(QuestionResponse::withAnswer)
+                .collect(Collectors.toList());
+        return dto;
+    }
+
     // url 포함 (상세 조회용)
-    public static AssignmentResponse withUrl(Assignment assignment,String problemUrl,String answerUrl){
-        AssignmentResponse dto = from(assignment);
+    public static AssignmentResponse withUrl(Assignment assignment,String problemUrl,String answerUrl,boolean isTeacher){
+        AssignmentResponse dto = isTeacher ? fromTeacher(assignment) : from(assignment);
         dto.problemUrl=problemUrl;
         dto.answerUrl=answerUrl;
         return dto;
     }
-    // 집계 포함 (목록 조회용)
+
+    // 집계 포함 (교사 목록 조회용)
     public static AssignmentResponse of(Assignment assignment,
                                         long totalCount,
                                         long submittedCount,
                                         long gradedCount) {
-        AssignmentResponse dto = from(assignment);
+        AssignmentResponse dto = fromTeacher(assignment);
         dto.totalCount = totalCount;
         dto.submittedCount = submittedCount;
         dto.gradedCount = gradedCount;
