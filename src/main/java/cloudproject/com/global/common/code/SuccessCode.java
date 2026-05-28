@@ -35,7 +35,28 @@ public enum SuccessCode implements BaseCode {
     REGRADE_REQUEST_LIST_FETCH_SUCCESS(HttpStatus.OK, "S105", "재채점 요청 목록을 조회했습니다."),
     LEADERBOARD_FETCH_SUCCESS(HttpStatus.OK, "S106", "과제 리더보드를 조회했습니다."),
     GRADING_TRIGGERED(HttpStatus.OK, "S107", "채점이 트리거되었습니다."),
-    GRADING_RESULT_REPORTED(HttpStatus.OK, "S108", "채점 결과가 저장되었습니다.");
+    GRADING_RESULT_REPORTED(HttpStatus.OK, "S108", "채점 결과가 저장되었습니다."),
+
+    // Classroom
+    CLASSROOM_CREATED(HttpStatus.CREATED, "CL001", "반이 생성되었습니다."),
+    CLASSROOM_FETCHED(HttpStatus.OK, "CL002", "반 조회가 완료되었습니다."),
+    CLASSROOMS_FETCHED(HttpStatus.OK, "CL003", "반 목록 조회가 완료되었습니다."),
+    CLASSROOM_UPDATED(HttpStatus.OK, "CL004", "반 정보가 수정되었습니다."),
+    CLASSROOM_DELETED(HttpStatus.OK, "CL005", "반이 삭제되었습니다."),
+    STUDENTS_ADDED(HttpStatus.CREATED, "CL006", "학생이 반에 추가되었습니다."),
+
+    // WrongNote
+    WRONG_NOTES_FETCHED(HttpStatus.OK, "WN001", "오답노트 목록 조회가 완료되었습니다."),
+    WRONG_NOTE_FETCHED(HttpStatus.OK, "WN002", "오답노트 상세 조회가 완료되었습니다."),
+
+    // Analytics
+    WEAK_POINTS_FETCHED(HttpStatus.OK, "AN001", "취약점 분석 목록 조회가 완료되었습니다."),
+    ASSIGNMENT_ANALYTICS_FETCHED(HttpStatus.OK, "AN002", "과제별 학생 통계 조회가 완료되었습니다."),
+
+    // Chat
+    CHAT_SUCCESS(HttpStatus.OK, "CH001", "AI 튜터 응답이 완료되었습니다."),
+    CHAT_HISTORY_FETCHED(HttpStatus.OK, "CH002", "대화 기록 조회가 완료되었습니다."),
+    SIMILAR_PROBLEM_GENERATED(HttpStatus.OK, "CH003", "유사문제 생성이 완료되었습니다.");
 
     private final HttpStatus httpStatus;
     private final String code;

@@ -1,7 +1,6 @@
 package cloudproject.com.grade.repository;
 
 import cloudproject.com.grade.domain.QuestionResult;
-import cloudproject.com.grade.domain.RegradeStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -45,6 +44,6 @@ public interface QuestionResultRepository extends JpaRepository<QuestionResult, 
             """)
     List<QuestionResult> findByAssignmentIdAndRegradeStatus(
             @Param("assignmentId") Long assignmentId,
-            @Param("regradeStatus") RegradeStatus regradeStatus
+            @Param("regradeStatus") String regradeStatus
     );
 }

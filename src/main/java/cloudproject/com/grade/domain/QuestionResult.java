@@ -23,22 +23,18 @@ public class QuestionResult {
     @JoinColumn(name = "question_id")
     private Question question;
 
-    @Enumerated(EnumType.STRING)
-    private Result result;
-
+    private String result;
     private Integer score;
 
     @Column(columnDefinition = "TEXT")
     private String reason;
 
     private String imageUrl;
-
-    @Enumerated(EnumType.STRING)
-    private RegradeStatus regradeStatus;
+    private String regradeStatus;
 
     public static QuestionResult of(
             Submission submission, Question question,
-            int score, Result result, String reason, String imageUrl
+            int score, String result, String reason, String imageUrl
     ) {
         QuestionResult qr = new QuestionResult();
         qr.submission = submission;
@@ -51,16 +47,16 @@ public class QuestionResult {
     }
 
     public void requestRegrade() {
-        this.regradeStatus = RegradeStatus.PENDING;
+        this.regradeStatus = "PENDING";
     }
 
     public void rejectRegrade() {
-        this.regradeStatus = RegradeStatus.DONE;
+        this.regradeStatus = "DONE";
     }
 
-    public void confirmRegradeWithScore(int newScore, Result newResult) {
+    public void confirmRegradeWithScore(int newScore, String newResult) {
         this.score = newScore;
         this.result = newResult;
-        this.regradeStatus = RegradeStatus.DONE;
+        this.regradeStatus = "DONE";
     }
 }

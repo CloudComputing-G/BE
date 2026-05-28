@@ -3,7 +3,6 @@ package cloudproject.com.grade.service;
 import cloudproject.com.assignment.domain.Question;
 import cloudproject.com.assignment.repository.QuestionRepository;
 import cloudproject.com.grade.domain.QuestionResult;
-import cloudproject.com.grade.domain.Result;
 import cloudproject.com.grade.domain.Submission;
 import cloudproject.com.grade.dto.GradingResultRequest;
 import cloudproject.com.grade.repository.QuestionResultRepository;
@@ -30,6 +29,9 @@ public class GradingService {
     private static final String GRADING_STATUS_PENDING = "PENDING";
     private static final String REPORT_STATUS_DONE = "DONE";
     private static final String REPORT_STATUS_FAILED = "FAILED";
+    private static final String RESULT_CORRECT = "CORRECT";
+    private static final String RESULT_PARTIAL = "PARTIAL";
+    private static final String RESULT_WRONG = "WRONG";
 
     private final SubmissionRepository submissionRepository;
     private final QuestionRepository questionRepository;
@@ -80,7 +82,7 @@ public class GradingService {
                     .orElseThrow(() -> new BusinessException(QUESTION_NOT_FOUND));
             int score = item.score() == null ? 0 : item.score();
             int maxScore = question.getMaxScore() == null ? 0 : question.getMaxScore();
-            Result result = computeResult(score, maxScore);
+            String result = computeResult(score, maxScore);
 
             QuestionResult qr = QuestionResult.of(
                     submission, question, score, result, item.reason(), item.imageUrl()
@@ -92,13 +94,13 @@ public class GradingService {
         submission.complete(totalScore, gradedAt);
     }
 
-    private Result computeResult(int score, int maxScore) {
+    private String computeResult(int score, int maxScore) {
         if (maxScore > 0 && score == maxScore) {
-            return Result.CORRECT;
+            return RESULT_CORRECT;
         }
         if (score == 0) {
-            return Result.WRONG;
+            return RESULT_WRONG;
         }
-        return Result.PARTIAL;
+        return RESULT_PARTIAL;
     }
 }

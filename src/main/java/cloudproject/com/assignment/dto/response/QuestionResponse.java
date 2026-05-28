@@ -13,15 +13,20 @@ public class QuestionResponse {
     private Integer maxScore;
     private Integer orderNum;
 
+    // 학생용 ( 정답 / 채점 기준 제외)
     public static QuestionResponse from(Question question) {
         QuestionResponse dto = new QuestionResponse();
         dto.questionId = question.getQuestionId();
         dto.content = question.getContent();
-        dto.answer = question.getAnswer();
-        dto.gradingCriteria = question.getGradingCriteria();
         dto.maxScore = question.getMaxScore();
         dto.orderNum = question.getOrderNum();
         return dto;
     }
-
+    // 정답/채점기준 포함 (교사용)
+    public static QuestionResponse withAnswer(Question question) {
+        QuestionResponse dto = from(question);
+        dto.answer = question.getAnswer();
+        dto.gradingCriteria = question.getGradingCriteria();
+        return dto;
+    }
 }

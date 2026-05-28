@@ -1,8 +1,5 @@
 package cloudproject.com.grade.dto;
 
-import cloudproject.com.grade.domain.RegradeStatus;
-import cloudproject.com.grade.domain.Result;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -30,12 +27,12 @@ public record SubmissionResultResponse(
     public record QuestionResultDto(
             Long questionId,
             String questionContent,
-            Result result,
+            String result,
             Integer score,
             Integer maxScore,
             String imageUrl,
             String reason,
-            RegradeStatus regradeStatus
+            String regradeStatus
     ) {
     }
 }

@@ -1,7 +1,5 @@
 package cloudproject.com.grade.dto;
 
-import cloudproject.com.grade.domain.Result;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -17,7 +15,7 @@ public record RegradeRequestListResponse(
             String questionContent,
             Integer currentScore,
             Integer maxScore,
-            Result currentResult,
+            String currentResult,
             String reason,
             String imageUrl,
             LocalDateTime submittedAt

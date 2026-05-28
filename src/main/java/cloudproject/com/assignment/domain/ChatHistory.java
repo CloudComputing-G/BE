@@ -30,4 +30,14 @@ public class ChatHistory {
     private String message;
 
     private LocalDateTime createdAt;
+
+    public static ChatHistory create(User student, Question question, String role, String message) {
+        ChatHistory ch = new ChatHistory();
+        ch.student = student;
+        ch.question = question;
+        ch.role = role;
+        ch.message = message;
+        ch.createdAt = LocalDateTime.now();
+        return ch;
+    }
 }

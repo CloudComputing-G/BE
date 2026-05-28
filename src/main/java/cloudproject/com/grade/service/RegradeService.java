@@ -4,8 +4,6 @@ import cloudproject.com.assignment.domain.Assignment;
 import cloudproject.com.assignment.repository.AssignmentRepository;
 import cloudproject.com.auth.domain.Role;
 import cloudproject.com.grade.domain.QuestionResult;
-import cloudproject.com.grade.domain.RegradeStatus;
-import cloudproject.com.grade.domain.Result;
 import cloudproject.com.grade.dto.RegradeConfirmResponse;
 import cloudproject.com.grade.dto.RegradeRequestListResponse;
 import cloudproject.com.grade.dto.RegradeResponse;
@@ -30,6 +28,11 @@ import static cloudproject.com.global.common.code.ErrorCode.SUBMISSION_NOT_GRADE
 public class RegradeService {
 
     private static final String GRADING_STATUS_DONE = "DONE";
+    private static final String REGRADE_STATUS_PENDING = "PENDING";
+    private static final String REGRADE_STATUS_DONE = "DONE";
+    private static final String RESULT_CORRECT = "CORRECT";
+    private static final String RESULT_PARTIAL = "PARTIAL";
+    private static final String RESULT_WRONG = "WRONG";
 
     private final QuestionResultRepository questionResultRepository;
     private final AssignmentRepository assignmentRepository;
@@ -54,11 +57,11 @@ public class RegradeService {
             throw new BusinessException(SUBMISSION_NOT_GRADED);
         }
 
-        if (questionResult.getRegradeStatus() != RegradeStatus.PENDING) {
+        if (!REGRADE_STATUS_PENDING.equals(questionResult.getRegradeStatus())) {
             questionResult.requestRegrade();
         }
 
-        return new RegradeResponse(questionId, RegradeStatus.PENDING);
+        return new RegradeResponse(questionId, REGRADE_STATUS_PENDING);
     }
 
     @Transactional
@@ -78,7 +81,7 @@ public class RegradeService {
             throw new BusinessException(SUBMISSION_ACCESS_DENIED);
         }
 
-        if (questionResult.getRegradeStatus() != RegradeStatus.PENDING) {
+        if (!REGRADE_STATUS_PENDING.equals(questionResult.getRegradeStatus())) {
             throw new BusinessException(REGRADE_NOT_PENDING);
         }
 
@@ -92,7 +95,7 @@ public class RegradeService {
                 throw new BusinessException(INVALID_SCORE);
             }
 
-            Result newResult = computeResult(score, maxScore);
+            String newResult = computeResult(score, maxScore);
             questionResult.confirmRegradeWithScore(score, newResult);
 
             recalculateTotalScore(submissionId, questionResult);
@@ -102,7 +105,7 @@ public class RegradeService {
                 questionId,
                 questionResult.getScore(),
                 questionResult.getResult(),
-                RegradeStatus.DONE,
+                REGRADE_STATUS_DONE,
                 questionResult.getSubmission().getTotalScore()
         );
     }
@@ -123,7 +126,7 @@ public class RegradeService {
         }
 
         List<QuestionResult> pending = questionResultRepository
-                .findByAssignmentIdAndRegradeStatus(assignmentId, RegradeStatus.PENDING);
+                .findByAssignmentIdAndRegradeStatus(assignmentId, REGRADE_STATUS_PENDING);
 
         List<RegradeRequestListResponse.Item> items = pending.stream()
                 .map(qr -> new RegradeRequestListResponse.Item(
@@ -153,13 +156,13 @@ public class RegradeService {
         updated.getSubmission().updateTotalScore(newTotal);
     }
 
-    private Result computeResult(int score, int maxScore) {
+    private String computeResult(int score, int maxScore) {
         if (maxScore > 0 && score == maxScore) {
-            return Result.CORRECT;
+            return RESULT_CORRECT;
         }
         if (score == 0) {
-            return Result.WRONG;
+            return RESULT_WRONG;
         }
-        return Result.PARTIAL;
+        return RESULT_PARTIAL;
     }
 }

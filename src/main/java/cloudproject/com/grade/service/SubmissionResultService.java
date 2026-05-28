@@ -4,7 +4,6 @@ import cloudproject.com.assignment.domain.Question;
 import cloudproject.com.assignment.repository.QuestionRepository;
 import cloudproject.com.auth.domain.Role;
 import cloudproject.com.grade.domain.QuestionResult;
-import cloudproject.com.grade.domain.Result;
 import cloudproject.com.grade.domain.Submission;
 import cloudproject.com.grade.dto.SubmissionResultResponse;
 import cloudproject.com.grade.dto.SubmissionStatusResponse;
@@ -25,6 +24,10 @@ import static cloudproject.com.global.common.code.ErrorCode.SUBMISSION_NOT_FOUND
 @Service
 @RequiredArgsConstructor
 public class SubmissionResultService {
+
+    private static final String RESULT_CORRECT = "CORRECT";
+    private static final String RESULT_PARTIAL = "PARTIAL";
+    private static final String RESULT_WRONG = "WRONG";
 
     private final SubmissionRepository submissionRepository;
     private final QuestionResultRepository questionResultRepository;
@@ -68,9 +71,9 @@ public class SubmissionResultService {
         );
         int maxScore = maxScoreSum == null ? 0 : Math.toIntExact(maxScoreSum);
 
-        int correct = countByResult(questionResults, Result.CORRECT);
-        int partial = countByResult(questionResults, Result.PARTIAL);
-        int wrong = countByResult(questionResults, Result.WRONG);
+        int correct = countByResult(questionResults, RESULT_CORRECT);
+        int partial = countByResult(questionResults, RESULT_PARTIAL);
+        int wrong = countByResult(questionResults, RESULT_WRONG);
 
         List<SubmissionResultResponse.QuestionResultDto> questions = questionResults.stream()
                 .map(this::toQuestionResultDto)
@@ -122,9 +125,9 @@ public class SubmissionResultService {
         }
     }
 
-    private int countByResult(List<QuestionResult> questionResults, Result result) {
+    private int countByResult(List<QuestionResult> questionResults, String result) {
         return (int) questionResults.stream()
-                .filter(questionResult -> result == questionResult.getResult())
+                .filter(questionResult -> result.equals(questionResult.getResult()))
                 .count();
     }
 
