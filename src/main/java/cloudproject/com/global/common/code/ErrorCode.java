@@ -38,7 +38,8 @@ public enum ErrorCode implements BaseCode {
     QUESTION_RESULT_NOT_FOUND(HttpStatus.NOT_FOUND, "G003", "해당 문항의 채점 결과를 찾을 수 없습니다."),
     SUBMISSION_NOT_GRADED(HttpStatus.CONFLICT, "G004", "채점이 완료되지 않은 제출물에는 재채점을 요청할 수 없습니다."),
     REGRADE_NOT_PENDING(HttpStatus.CONFLICT, "G005", "재채점 요청 상태(PENDING)가 아닌 항목은 확정할 수 없습니다."),
-    INVALID_SCORE(HttpStatus.BAD_REQUEST, "G006", "점수는 0 이상 만점 이하여야 합니다.");
+    INVALID_SCORE(HttpStatus.BAD_REQUEST, "G006", "점수는 0 이상 만점 이하여야 합니다."),
+    GRADING_ALREADY_COMPLETED(HttpStatus.CONFLICT, "G009", "이미 채점이 완료/실패 처리된 제출물입니다.");
 
     private final HttpStatus httpStatus;
     private final String code;

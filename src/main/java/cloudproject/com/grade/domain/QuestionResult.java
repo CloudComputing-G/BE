@@ -36,6 +36,20 @@ public class QuestionResult {
     @Enumerated(EnumType.STRING)
     private RegradeStatus regradeStatus;
 
+    public static QuestionResult of(
+            Submission submission, Question question,
+            int score, Result result, String reason, String imageUrl
+    ) {
+        QuestionResult qr = new QuestionResult();
+        qr.submission = submission;
+        qr.question = question;
+        qr.score = score;
+        qr.result = result;
+        qr.reason = reason;
+        qr.imageUrl = imageUrl;
+        return qr;
+    }
+
     public void requestRegrade() {
         this.regradeStatus = RegradeStatus.PENDING;
     }

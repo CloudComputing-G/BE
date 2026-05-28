@@ -56,4 +56,17 @@ public class Submission {
     public void updateTotalScore(int totalScore) {
         this.totalScore = totalScore;
     }
+
+    public void complete(int totalScore, LocalDateTime gradedAt) {
+        this.gradingStatus = "DONE";
+        this.totalScore = totalScore;
+        this.gradedAt = gradedAt;
+        this.failReason = null;
+    }
+
+    public void fail(String failReason, LocalDateTime gradedAt) {
+        this.gradingStatus = "FAILED";
+        this.failReason = failReason;
+        this.gradedAt = gradedAt;
+    }
 }
