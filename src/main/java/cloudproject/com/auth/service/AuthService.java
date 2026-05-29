@@ -52,6 +52,7 @@ public class AuthService {
 
         String accessToken = jwtTokenProvider.generateAccessToken(user.getUserId(), user.getRole());
         String newRefreshToken = jwtTokenProvider.generateRefreshToken(user.getUserId());
+        String username = user.getName();
 
         String hashedToken = jwtTokenProvider.hashToken(newRefreshToken);
         refreshTokenRepository.findByUser(user).ifPresentOrElse(
@@ -59,7 +60,7 @@ public class AuthService {
                 () -> refreshTokenRepository.save(RefreshToken.of(user, hashedToken))
         );
 
-        return new TokenResponse(accessToken, newRefreshToken);
+        return new TokenResponse(accessToken, newRefreshToken, username);
     }
 
     @Transactional
@@ -70,9 +71,10 @@ public class AuthService {
         User user = stored.getUser();
         String newAccessToken = jwtTokenProvider.generateAccessToken(user.getUserId(), user.getRole());
         String newRefreshToken = jwtTokenProvider.generateRefreshToken(user.getUserId());
+        String username = user.getName();
 
         stored.updateToken(jwtTokenProvider.hashToken(newRefreshToken));
 
-        return new TokenResponse(newAccessToken, newRefreshToken);
+        return new TokenResponse(newAccessToken, newRefreshToken, username);
     }
 }
