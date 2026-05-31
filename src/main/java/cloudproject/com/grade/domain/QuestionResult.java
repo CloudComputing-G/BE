@@ -31,4 +31,32 @@ public class QuestionResult {
 
     private String imageUrl;
     private String regradeStatus;
+
+    public static QuestionResult of(
+            Submission submission, Question question,
+            int score, String result, String reason, String imageUrl
+    ) {
+        QuestionResult qr = new QuestionResult();
+        qr.submission = submission;
+        qr.question = question;
+        qr.score = score;
+        qr.result = result;
+        qr.reason = reason;
+        qr.imageUrl = imageUrl;
+        return qr;
+    }
+
+    public void requestRegrade() {
+        this.regradeStatus = "PENDING";
+    }
+
+    public void rejectRegrade() {
+        this.regradeStatus = "DONE";
+    }
+
+    public void confirmRegradeWithScore(int newScore, String newResult) {
+        this.score = newScore;
+        this.result = newResult;
+        this.regradeStatus = "DONE";
+    }
 }

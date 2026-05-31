@@ -12,6 +12,7 @@ import cloudproject.com.global.s3.S3Service;
 import cloudproject.com.global.s3.S3uploadResult;
 import cloudproject.com.grade.domain.Submission;
 import cloudproject.com.grade.repository.SubmissionRepository;
+import cloudproject.com.grade.service.GradingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +25,7 @@ public class ImageService {
     private final SubmissionRepository submissionRepository;
     private final AssignmentRepository assignmentRepository;
     private final UserRepository userRepository;
+    private final GradingService gradingService;
 
     public PresignedUrlResponse getTeacherUploadUrl(String type, String fileExtension) {
         S3uploadResult result = type.equals("problem")
@@ -64,8 +66,8 @@ public class ImageService {
                 .findBySubmissionIdAndAssignment_AssignmentId(submissionId, assignmentId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.SUBMISSION_NOT_FOUND));
 
-        //todo PENDING 상태로 업데이트 → GradingService에서 감지 후 채점 시작
         submission.confirmUpload();
+        gradingService.startGrading(submission.getSubmissionId());
 
         return SubmissionResponse.from(submission);
     }
