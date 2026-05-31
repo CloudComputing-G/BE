@@ -36,21 +36,19 @@ public class GradingService {
     private final SubmissionRepository submissionRepository;
     private final QuestionRepository questionRepository;
     private final QuestionResultRepository questionResultRepository;
+    private final GradingJobPublisher gradingJobPublisher;
 
     @Transactional
     public void startGrading(Long submissionId) {
-        Submission submission = submissionRepository.findById(submissionId)
+        Submission submission = submissionRepository.findDetailById(submissionId)
                 .orElseThrow(() -> new BusinessException(SUBMISSION_NOT_FOUND));
 
         if (!GRADING_STATUS_PENDING.equals(submission.getGradingStatus())) {
             throw new BusinessException(SUBMISSION_NOT_GRADED);
         }
 
-        // TODO: Lambda 채점 워커 invoke 메커니즘 미정. 합의 완료 후 구현.
-        //   옵션 1) AWS Lambda async invoke (software.amazon.awssdk:lambda)
-        //   옵션 2) SQS publish
-        //   옵션 3) S3 event 사용 시 이 메서드 자체가 불필요
-        log.info("Grading triggered for submissionId={} (Lambda invoke not yet wired)", submissionId);
+        gradingJobPublisher.publish(submission);
+        log.info("Grading triggered for submissionId={}", submissionId);
     }
 
     @Transactional
