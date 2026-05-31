@@ -71,7 +71,7 @@ public class AssignmentService {
         }
 
         Assignment saved = assignmentRepository.save(assignment);
-        return AssignmentResponse.from(saved);
+        return AssignmentResponse.fromTeacher(saved);
     }
 
     // 반별 과제 목록 조회 (GET /assignments?classId=1)
