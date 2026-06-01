@@ -83,7 +83,7 @@ public class GradingService {
             String result = computeResult(score, maxScore);
 
             QuestionResult qr = QuestionResult.of(
-                    submission, question, score, result, item.reason(), item.imageUrl()
+                    submission, question, score, result, item.reason(), null
             );
             questionResultRepository.save(qr);
         }

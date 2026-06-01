@@ -17,8 +17,7 @@ public record GradingResultRequest(
     public record QuestionResultItem(
             Long questionId,
             Integer score,
-            String reason,
-            String imageUrl
+            String reason
     ) {
     }
 }
