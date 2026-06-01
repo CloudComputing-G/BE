@@ -2,6 +2,7 @@ package cloudproject.com.grade.repository;
 
 import cloudproject.com.grade.domain.QuestionResult;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -46,4 +47,8 @@ public interface QuestionResultRepository extends JpaRepository<QuestionResult, 
             @Param("assignmentId") Long assignmentId,
             @Param("regradeStatus") String regradeStatus
     );
+
+    @Modifying
+    @Query("delete from QuestionResult qr where qr.submission.submissionId = :submissionId")
+    void deleteAllBySubmissionId(@Param("submissionId") Long submissionId);
 }

@@ -75,6 +75,8 @@ public class GradingService {
             throw new BusinessException(INVALID_INPUT_VALUE);
         }
 
+        questionResultRepository.deleteAllBySubmissionId(submissionId);
+
         for (GradingResultRequest.QuestionResultItem item : request.questions()) {
             Question question = questionRepository.findById(item.questionId())
                     .orElseThrow(() -> new BusinessException(QUESTION_NOT_FOUND));
