@@ -2,9 +2,11 @@ package cloudproject.com.grade.service;
 
 import cloudproject.com.assignment.domain.Question;
 import cloudproject.com.assignment.repository.QuestionRepository;
+import cloudproject.com.grade.domain.AnalyticsRecord;
 import cloudproject.com.grade.domain.QuestionResult;
 import cloudproject.com.grade.domain.Submission;
 import cloudproject.com.grade.dto.GradingResultRequest;
+import cloudproject.com.grade.repository.AnalyticsRecordRepository;
 import cloudproject.com.grade.repository.QuestionResultRepository;
 import cloudproject.com.grade.repository.SubmissionRepository;
 import cloudproject.com.global.error.BusinessException;
@@ -36,6 +38,7 @@ public class GradingService {
     private final SubmissionRepository submissionRepository;
     private final QuestionRepository questionRepository;
     private final QuestionResultRepository questionResultRepository;
+    private final AnalyticsRecordRepository analyticsRecordRepository;
     private final GradingJobPublisher gradingJobPublisher;
 
     @Transactional
@@ -53,7 +56,7 @@ public class GradingService {
 
     @Transactional
     public void reportResult(Long submissionId, GradingResultRequest request) {
-        Submission submission = submissionRepository.findById(submissionId)
+        Submission submission = submissionRepository.findDetailById(submissionId)
                 .orElseThrow(() -> new BusinessException(SUBMISSION_NOT_FOUND));
 
         if (!GRADING_STATUS_PENDING.equals(submission.getGradingStatus())) {
@@ -77,12 +80,17 @@ public class GradingService {
 
         questionResultRepository.deleteAllBySubmissionId(submissionId);
 
+        int errorCount = 0;
         for (GradingResultRequest.QuestionResultItem item : request.questions()) {
             Question question = questionRepository.findById(item.questionId())
                     .orElseThrow(() -> new BusinessException(QUESTION_NOT_FOUND));
             int score = item.score() == null ? 0 : item.score();
             int maxScore = question.getMaxScore() == null ? 0 : question.getMaxScore();
             String result = computeResult(score, maxScore);
+
+            if (!RESULT_CORRECT.equals(result)) {
+                errorCount++;
+            }
 
             QuestionResult qr = QuestionResult.of(
                     submission, question, score, result, item.reason(), null
@@ -92,6 +100,29 @@ public class GradingService {
 
         int totalScore = request.totalScore() == null ? 0 : request.totalScore();
         submission.complete(totalScore, gradedAt);
+
+        saveAnalytics(submission, errorCount, request.questions().size());
+    }
+
+    private void saveAnalytics(Submission submission, int errorCount, int totalCount) {
+        Long studentId = submission.getStudent().getUserId();
+        Long assignmentId = submission.getAssignment().getAssignmentId();
+
+        analyticsRecordRepository.deleteByStudentIdAndAssignmentId(studentId, assignmentId);
+
+        String questionType = submission.getAssignment().getSubject();
+        if (questionType == null || questionType.isBlank()) {
+            questionType = "OVERALL";
+        }
+
+        AnalyticsRecord record = AnalyticsRecord.create(
+                submission.getStudent(),
+                submission.getAssignment(),
+                questionType,
+                errorCount,
+                totalCount
+        );
+        analyticsRecordRepository.save(record);
     }
 
     private String computeResult(int score, int maxScore) {

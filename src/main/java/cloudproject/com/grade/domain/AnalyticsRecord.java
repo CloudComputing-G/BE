@@ -30,4 +30,17 @@ public class AnalyticsRecord {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "assignment_id")
     private Assignment assignment;
+
+    public static AnalyticsRecord create(User student, Assignment assignment, String questionType,
+                                         int errorCount, int totalCount) {
+        AnalyticsRecord record = new AnalyticsRecord();
+        record.student = student;
+        record.assignment = assignment;
+        record.questionType = questionType;
+        record.errorCount = errorCount;
+        record.totalCount = totalCount;
+        record.predictedErrorRate = totalCount > 0 ? (float) errorCount / totalCount : 0f;
+        record.updatedAt = LocalDateTime.now();
+        return record;
+    }
 }
