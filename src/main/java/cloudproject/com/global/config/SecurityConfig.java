@@ -30,7 +30,7 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final InternalTokenFilter internalTokenFilter;
 
-    @Value("${cors.allowed-origins:http://localhost:3000}")
+    @Value("${cors.allowed-origins:http://localhost:3000,https://fe-qwxj.vercel.app}")
     private List<String> allowedOrigins;
 
     @Bean
