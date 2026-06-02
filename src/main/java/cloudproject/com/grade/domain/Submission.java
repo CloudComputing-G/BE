@@ -31,6 +31,7 @@ public class Submission {
     private Integer totalScore;
     private LocalDateTime submittedAt;
     private LocalDateTime gradedAt;
+    private String failReason;
 
     @PrePersist
     protected void onCreate() {
@@ -50,5 +51,22 @@ public class Submission {
 
     public void confirmUpload() {
         this.gradingStatus = "PENDING";
+    }
+
+    public void updateTotalScore(int totalScore) {
+        this.totalScore = totalScore;
+    }
+
+    public void complete(int totalScore, LocalDateTime gradedAt) {
+        this.gradingStatus = "DONE";
+        this.totalScore = totalScore;
+        this.gradedAt = gradedAt;
+        this.failReason = null;
+    }
+
+    public void fail(String failReason, LocalDateTime gradedAt) {
+        this.gradingStatus = "FAILED";
+        this.failReason = failReason;
+        this.gradedAt = gradedAt;
     }
 }
