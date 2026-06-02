@@ -2,6 +2,7 @@ package cloudproject.com.grade.repository;
 
 import cloudproject.com.grade.domain.AnalyticsRecord;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -20,4 +21,8 @@ public interface AnalyticsRecordRepository extends JpaRepository<AnalyticsRecord
            "WHERE ar.assignment.assignmentId = :assignmentId " +
            "ORDER BY s.name ASC, ar.predictedErrorRate DESC")
     List<AnalyticsRecord> findByAssignmentIdWithStudent(@Param("assignmentId") Long assignmentId);
+
+    @Modifying
+    @Query("DELETE FROM AnalyticsRecord ar WHERE ar.student.userId = :studentId AND ar.assignment.assignmentId = :assignmentId")
+    void deleteByStudentIdAndAssignmentId(@Param("studentId") Long studentId, @Param("assignmentId") Long assignmentId);
 }
