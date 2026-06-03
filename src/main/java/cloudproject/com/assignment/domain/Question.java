@@ -29,6 +29,7 @@ public class Question {
 
     private Integer maxScore;
     private Integer orderNum;
+    private String questionType;
 
     public void update(String answer, String gradingCriteria) {
         this.answer = answer;

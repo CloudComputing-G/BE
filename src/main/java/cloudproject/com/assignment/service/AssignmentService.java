@@ -65,6 +65,7 @@ public class AssignmentService {
                         .gradingCriteria(q.getGradingCriteria())
                         .maxScore(q.getMaxScore())
                         .orderNum(q.getOrderNum())
+                        .questionType(q.getQuestionType())
                         .build();
                 assignment.getQuestions().add(question);
             });

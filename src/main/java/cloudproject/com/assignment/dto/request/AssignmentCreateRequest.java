@@ -41,5 +41,7 @@ public class AssignmentCreateRequest {
         private Integer maxScore;
 
         private Integer orderNum;
+
+        private String questionType;
     }
 }
