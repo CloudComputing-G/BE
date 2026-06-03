@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import static cloudproject.com.global.common.code.ErrorCode.GRADING_ALREADY_COMPLETED;
 import static cloudproject.com.global.common.code.ErrorCode.INVALID_INPUT_VALUE;
@@ -80,7 +82,7 @@ public class GradingService {
 
         questionResultRepository.deleteAllBySubmissionId(submissionId);
 
-        int errorCount = 0;
+        Map<String, int[]> typeStats = new LinkedHashMap<>();
         for (GradingResultRequest.QuestionResultItem item : request.questions()) {
             Question question = questionRepository.findById(item.questionId())
                     .orElseThrow(() -> new BusinessException(QUESTION_NOT_FOUND));
@@ -88,8 +90,12 @@ public class GradingService {
             int maxScore = question.getMaxScore() == null ? 0 : question.getMaxScore();
             String result = computeResult(score, maxScore);
 
+            String qType = (question.getQuestionType() != null && !question.getQuestionType().isBlank())
+                    ? question.getQuestionType() : "GENERAL";
+            typeStats.computeIfAbsent(qType, k -> new int[]{0, 0});
+            typeStats.get(qType)[1]++;
             if (!RESULT_CORRECT.equals(result)) {
-                errorCount++;
+                typeStats.get(qType)[0]++;
             }
 
             QuestionResult qr = QuestionResult.of(
@@ -101,28 +107,25 @@ public class GradingService {
         int totalScore = request.totalScore() == null ? 0 : request.totalScore();
         submission.complete(totalScore, gradedAt);
 
-        saveAnalytics(submission, errorCount, request.questions().size());
+        saveAnalytics(submission, typeStats);
     }
 
-    private void saveAnalytics(Submission submission, int errorCount, int totalCount) {
+    private void saveAnalytics(Submission submission, Map<String, int[]> typeStats) {
         Long studentId = submission.getStudent().getUserId();
         Long assignmentId = submission.getAssignment().getAssignmentId();
 
         analyticsRecordRepository.deleteByStudentIdAndAssignmentId(studentId, assignmentId);
 
-        String questionType = submission.getAssignment().getSubject();
-        if (questionType == null || questionType.isBlank()) {
-            questionType = "OVERALL";
-        }
-
-        AnalyticsRecord record = AnalyticsRecord.create(
-                submission.getStudent(),
-                submission.getAssignment(),
-                questionType,
-                errorCount,
-                totalCount
-        );
-        analyticsRecordRepository.save(record);
+        typeStats.forEach((questionType, counts) -> {
+            AnalyticsRecord record = AnalyticsRecord.create(
+                    submission.getStudent(),
+                    submission.getAssignment(),
+                    questionType,
+                    counts[0],
+                    counts[1]
+            );
+            analyticsRecordRepository.save(record);
+        });
     }
 
     private String computeResult(int score, int maxScore) {

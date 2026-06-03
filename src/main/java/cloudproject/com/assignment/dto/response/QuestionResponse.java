@@ -12,6 +12,7 @@ public class QuestionResponse {
     private String gradingCriteria;
     private Integer maxScore;
     private Integer orderNum;
+    private String questionType;
 
     // 학생용 ( 정답 / 채점 기준 제외)
     public static QuestionResponse from(Question question) {
@@ -20,6 +21,7 @@ public class QuestionResponse {
         dto.content = question.getContent();
         dto.maxScore = question.getMaxScore();
         dto.orderNum = question.getOrderNum();
+        dto.questionType = question.getQuestionType();
         return dto;
     }
     // 정답/채점기준 포함 (교사용)
