@@ -12,6 +12,7 @@ public class QuestionResponse {
     private String gradingCriteria;
     private Integer maxScore;
     private Integer orderNum;
+    private String questionType;
     private String category;
     private String detectedType;
 
@@ -22,6 +23,7 @@ public class QuestionResponse {
         dto.content = question.getContent();
         dto.maxScore = question.getMaxScore();
         dto.orderNum = question.getOrderNum();
+        dto.questionType = question.getQuestionType();
         dto.category = question.getCategory();
         dto.detectedType = question.getDetectedType();
         return dto;

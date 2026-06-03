@@ -29,6 +29,7 @@ public class Question {
 
     private Integer maxScore;
     private Integer orderNum;
+    private String questionType;
 
     @Column(length = 50)
     private String category;

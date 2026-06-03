@@ -2,9 +2,11 @@ package cloudproject.com.grade.service;
 
 import cloudproject.com.assignment.domain.Question;
 import cloudproject.com.assignment.repository.QuestionRepository;
+import cloudproject.com.grade.domain.AnalyticsRecord;
 import cloudproject.com.grade.domain.QuestionResult;
 import cloudproject.com.grade.domain.Submission;
 import cloudproject.com.grade.dto.GradingResultRequest;
+import cloudproject.com.grade.repository.AnalyticsRecordRepository;
 import cloudproject.com.grade.repository.QuestionResultRepository;
 import cloudproject.com.grade.repository.SubmissionRepository;
 import cloudproject.com.global.error.BusinessException;
@@ -14,6 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import static cloudproject.com.global.common.code.ErrorCode.GRADING_ALREADY_COMPLETED;
 import static cloudproject.com.global.common.code.ErrorCode.INVALID_INPUT_VALUE;
@@ -36,6 +40,7 @@ public class GradingService {
     private final SubmissionRepository submissionRepository;
     private final QuestionRepository questionRepository;
     private final QuestionResultRepository questionResultRepository;
+    private final AnalyticsRecordRepository analyticsRecordRepository;
     private final GradingJobPublisher gradingJobPublisher;
 
     @Transactional
@@ -53,7 +58,7 @@ public class GradingService {
 
     @Transactional
     public void reportResult(Long submissionId, GradingResultRequest request) {
-        Submission submission = submissionRepository.findById(submissionId)
+        Submission submission = submissionRepository.findDetailById(submissionId)
                 .orElseThrow(() -> new BusinessException(SUBMISSION_NOT_FOUND));
 
         if (!GRADING_STATUS_PENDING.equals(submission.getGradingStatus())) {
@@ -77,6 +82,7 @@ public class GradingService {
 
         questionResultRepository.deleteAllBySubmissionId(submissionId);
 
+        Map<String, int[]> typeStats = new LinkedHashMap<>();
         for (GradingResultRequest.QuestionResultItem item : request.questions()) {
             Question question = questionRepository.findById(item.questionId())
                     .orElseThrow(() -> new BusinessException(QUESTION_NOT_FOUND));
@@ -88,6 +94,14 @@ public class GradingService {
             int maxScore = question.getMaxScore() == null ? 0 : question.getMaxScore();
             String result = computeResult(score, maxScore);
 
+            String qType = (question.getQuestionType() != null && !question.getQuestionType().isBlank())
+                    ? question.getQuestionType() : "GENERAL";
+            typeStats.computeIfAbsent(qType, k -> new int[]{0, 0});
+            typeStats.get(qType)[1]++;
+            if (!RESULT_CORRECT.equals(result)) {
+                typeStats.get(qType)[0]++;
+            }
+
             QuestionResult qr = QuestionResult.of(
                     submission, question, score, result, item.reason(), null,
                     item.needsManualReview()
@@ -97,6 +111,26 @@ public class GradingService {
 
         int totalScore = request.totalScore() == null ? 0 : request.totalScore();
         submission.complete(totalScore, gradedAt);
+
+        saveAnalytics(submission, typeStats);
+    }
+
+    private void saveAnalytics(Submission submission, Map<String, int[]> typeStats) {
+        Long studentId = submission.getStudent().getUserId();
+        Long assignmentId = submission.getAssignment().getAssignmentId();
+
+        analyticsRecordRepository.deleteByStudentIdAndAssignmentId(studentId, assignmentId);
+
+        typeStats.forEach((questionType, counts) -> {
+            AnalyticsRecord record = AnalyticsRecord.create(
+                    submission.getStudent(),
+                    submission.getAssignment(),
+                    questionType,
+                    counts[0],
+                    counts[1]
+            );
+            analyticsRecordRepository.save(record);
+        });
     }
 
     private String computeResult(int score, int maxScore) {
