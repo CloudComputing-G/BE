@@ -32,7 +32,10 @@ public record SubmissionResultResponse(
             Integer maxScore,
             String imageUrl,
             String reason,
-            String regradeStatus
+            String regradeStatus,
+            String category,
+            String detectedType,
+            Boolean needsManualReview
     ) {
     }
 }

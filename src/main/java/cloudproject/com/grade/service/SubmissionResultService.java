@@ -142,7 +142,10 @@ public class SubmissionResultService {
                 question.getMaxScore(),
                 questionResult.getImageUrl(),
                 questionResult.getReason(),
-                questionResult.getRegradeStatus()
+                questionResult.getRegradeStatus(),
+                question.getCategory(),
+                question.getDetectedType(),
+                questionResult.getNeedsManualReview()
         );
     }
 }

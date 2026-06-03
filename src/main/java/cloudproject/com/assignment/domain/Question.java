@@ -30,8 +30,22 @@ public class Question {
     private Integer maxScore;
     private Integer orderNum;
 
+    @Column(length = 50)
+    private String category;
+
+    @Column(length = 30)
+    private String detectedType;
+
     public void update(String answer, String gradingCriteria) {
         this.answer = answer;
         this.gradingCriteria = gradingCriteria;
+    }
+
+    public void updateCategory(String category) {
+        this.category = category;
+    }
+
+    public void updateDetectedType(String detectedType) {
+        this.detectedType = detectedType;
     }
 }

@@ -31,10 +31,12 @@ public class QuestionResult {
 
     private String imageUrl;
     private String regradeStatus;
+    private Boolean needsManualReview;
 
     public static QuestionResult of(
             Submission submission, Question question,
-            int score, String result, String reason, String imageUrl
+            int score, String result, String reason, String imageUrl,
+            Boolean needsManualReview
     ) {
         QuestionResult qr = new QuestionResult();
         qr.submission = submission;
@@ -43,6 +45,7 @@ public class QuestionResult {
         qr.result = result;
         qr.reason = reason;
         qr.imageUrl = imageUrl;
+        qr.needsManualReview = needsManualReview;
         return qr;
     }
 
