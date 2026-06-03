@@ -35,4 +35,8 @@ public class Question {
         this.answer = answer;
         this.gradingCriteria = gradingCriteria;
     }
+
+    public void updateQuestionType(String questionType) {
+        this.questionType = questionType;
+    }
 }
