@@ -49,4 +49,8 @@ public class Question {
     public void updateDetectedType(String detectedType) {
         this.detectedType = detectedType;
     }
+
+    public void updateQuestionType(String questionType) {
+        this.questionType = questionType;
+    }
 }

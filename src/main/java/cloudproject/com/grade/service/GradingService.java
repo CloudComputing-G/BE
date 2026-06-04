@@ -94,8 +94,9 @@ public class GradingService {
             int maxScore = question.getMaxScore() == null ? 0 : question.getMaxScore();
             String result = computeResult(score, maxScore);
 
-            String qType = (question.getQuestionType() != null && !question.getQuestionType().isBlank())
-                    ? question.getQuestionType() : "GENERAL";
+            String qType = (item.questionType() != null && !item.questionType().isBlank())
+                    ? item.questionType() : "GENERAL";
+            question.updateQuestionType(qType);
             typeStats.computeIfAbsent(qType, k -> new int[]{0, 0});
             typeStats.get(qType)[1]++;
             if (!RESULT_CORRECT.equals(result)) {

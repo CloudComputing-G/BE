@@ -20,7 +20,8 @@ public record GradingResultRequest(
             String reason,
             String category,
             String detectedType,
-            Boolean needsManualReview
+            Boolean needsManualReview,
+            String questionType
     ) {
     }
 }

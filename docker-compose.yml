@@ -4,8 +4,20 @@ services:
   app:
     image: ${DOCKERHUB_USERNAME}/checkmate:latest
     container_name: checkmate-app
-    ports:
-      - "8080:8080"
+    expose:
+      - "8080"
     restart: unless-stopped
     volumes:
       - ./logs:/apps/logs
+  nginx:
+    image: nginx:latest
+    container_name: checkmate-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /etc/letsencrypt:/etc/letsencrypt
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    restart: unless-stopped
+    depends_on:
+      - app
