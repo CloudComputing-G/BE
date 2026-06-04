@@ -3,6 +3,7 @@ package cloudproject.com.grade.repository;
 import cloudproject.com.grade.domain.Submission;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -37,8 +38,10 @@ public interface SubmissionRepository extends JpaRepository<Submission, Long> {
 
     @Query("""
             select s from Submission s
+            join fetch s.assignment a
+            join fetch a.teacher
             join fetch s.student
-            where s.assignment.assignmentId = :assignmentId
+            where a.assignmentId = :assignmentId
             order by s.submittedAt desc
             """)
     List<Submission> findAllByAssignmentIdWithStudent(@Param("assignmentId") Long assignmentId);
@@ -54,4 +57,8 @@ public interface SubmissionRepository extends JpaRepository<Submission, Long> {
 
     // 중복 제출 체크
     Optional<Submission> findByAssignment_AssignmentIdAndStudent_UserId(Long assignmentId, Long studentId);
+
+    @Modifying
+    @Query("update Submission s set s.gradingStatus = 'FAILED', s.failReason = :reason, s.gradedAt = current_timestamp where s.gradingStatus = 'PENDING'")
+    int failAllPending(@Param("reason") String reason);
 }
