@@ -13,9 +13,19 @@ import java.util.Optional;
 @Repository
 public interface AssignmentRepository extends JpaRepository<Assignment, Long> {
 
-    List<Assignment> findByClassroom_ClassIdAndTeacher(Long classId, User teacher);
+    @Query("""
+            select distinct a from Assignment a
+            left join fetch a.questions
+            where a.classroom.classId = :classId and a.teacher = :teacher
+            """)
+    List<Assignment> findByClassroom_ClassIdAndTeacher(@Param("classId") Long classId, @Param("teacher") User teacher);
 
-    List<Assignment> findByClassroom_ClassIdAndStatus(Long classId, String status);
+    @Query("""
+            select distinct a from Assignment a
+            left join fetch a.questions
+            where a.classroom.classId = :classId and a.status = :status
+            """)
+    List<Assignment> findByClassroom_ClassIdAndStatus(@Param("classId") Long classId, @Param("status") String status);
 
     @Query("""
             select a from Assignment a
@@ -23,4 +33,12 @@ public interface AssignmentRepository extends JpaRepository<Assignment, Long> {
             where a.assignmentId = :assignmentId
             """)
     Optional<Assignment> findByIdWithTeacher(@Param("assignmentId") Long assignmentId);
+
+    @Query("""
+            select a from Assignment a
+            join fetch a.teacher
+            left join fetch a.questions
+            where a.assignmentId = :assignmentId
+            """)
+    Optional<Assignment> findByIdWithTeacherAndQuestions(@Param("assignmentId") Long assignmentId);
 }

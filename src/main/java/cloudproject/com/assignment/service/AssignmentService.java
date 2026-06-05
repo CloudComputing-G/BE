@@ -106,7 +106,7 @@ public class AssignmentService {
 
     // 과제 상세 조회 (GET /assignments/{id})
     public AssignmentResponse getAssignment(Long assignmentId,boolean isTeacher){
-        Assignment assignment = assignmentRepository.findById(assignmentId)
+        Assignment assignment = assignmentRepository.findByIdWithTeacherAndQuestions(assignmentId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.ASSIGNMENT_NOT_FOUND));
 
         String problemUrl = assignment.getProblemS3Key() != null
@@ -125,7 +125,7 @@ public class AssignmentService {
     //과제 수정 (put/assignments/{id})
     @Transactional
     public AssignmentResponse updateAssingment(Long assignmentId, AssignmentUpdateRequest request, Long teacherId){
-        Assignment assignment = assignmentRepository.findById(assignmentId)
+        Assignment assignment = assignmentRepository.findByIdWithTeacherAndQuestions(assignmentId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.ASSIGNMENT_NOT_FOUND));
 
         if (!assignment.getTeacher().getUserId().equals(teacherId)) {
@@ -143,7 +143,7 @@ public class AssignmentService {
     //과제 삭제 (Delete/assignments/{id})
     @Transactional
     public void deleteAssignment(Long assignmentId, Long teacherId) {
-        Assignment assignment = assignmentRepository.findById(assignmentId)
+        Assignment assignment = assignmentRepository.findByIdWithTeacher(assignmentId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.ASSIGNMENT_NOT_FOUND));
 
         if (!assignment.getTeacher().getUserId().equals(teacherId)) {
@@ -156,7 +156,7 @@ public class AssignmentService {
     @Transactional
     public void updateQuestion(Long assignmentId, Long questionId, QuestionUpdateRequest request, Long teacherId) {
 
-        Assignment assignment = assignmentRepository.findById(assignmentId)
+        Assignment assignment = assignmentRepository.findByIdWithTeacher(assignmentId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.ASSIGNMENT_NOT_FOUND));
 
         if (!assignment.getTeacher().getUserId().equals(teacherId)) {
@@ -173,7 +173,7 @@ public class AssignmentService {
     @Transactional
     public AssignmentResponse publishAssignment(Long assignmentId, Long teacherId) {
 
-        Assignment assignment = assignmentRepository.findById(assignmentId)
+        Assignment assignment = assignmentRepository.findByIdWithTeacherAndQuestions(assignmentId)
                 .orElseThrow(() -> new BusinessException(ErrorCode.ASSIGNMENT_NOT_FOUND));
 
         if (!assignment.getTeacher().getUserId().equals(teacherId)) {
