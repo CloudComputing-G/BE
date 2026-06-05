@@ -41,7 +41,6 @@ public class SecurityConfig {
                         .requestMatchers("/api/internal/**").permitAll()
                         .anyRequest().authenticated()
                 )
-                .addFilterBefore(new org.springframework.web.filter.CorsFilter(corsConfigurationSource()), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(internalTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
