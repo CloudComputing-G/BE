@@ -30,9 +30,6 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final InternalTokenFilter internalTokenFilter;
 
-    @Value("${cors.allowed-origins:http://localhost:3000,https://fe-qwxj.vercel.app,https://checkmate-g.store}")
-    private List<String> allowedOrigins;
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
