@@ -17,7 +17,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static cloudproject.com.global.common.code.ErrorCode.GRADING_ALREADY_COMPLETED;
 import static cloudproject.com.global.common.code.ErrorCode.INVALID_INPUT_VALUE;
@@ -82,10 +85,17 @@ public class GradingService {
 
         questionResultRepository.deleteAllBySubmissionId(submissionId);
 
+        List<Long> questionIds = request.questions().stream()
+                .map(GradingResultRequest.QuestionResultItem::questionId)
+                .toList();
+        Map<Long, Question> questionMap = questionRepository.findAllById(questionIds).stream()
+                .collect(Collectors.toMap(Question::getQuestionId, Function.identity()));
+
         Map<String, int[]> typeStats = new LinkedHashMap<>();
+        List<QuestionResult> results = new java.util.ArrayList<>();
         for (GradingResultRequest.QuestionResultItem item : request.questions()) {
-            Question question = questionRepository.findById(item.questionId())
-                    .orElseThrow(() -> new BusinessException(QUESTION_NOT_FOUND));
+            Question question = questionMap.get(item.questionId());
+            if (question == null) throw new BusinessException(QUESTION_NOT_FOUND);
 
             question.updateCategory(item.category());
             question.updateDetectedType(item.detectedType());
@@ -103,12 +113,12 @@ public class GradingService {
                 typeStats.get(qType)[0]++;
             }
 
-            QuestionResult qr = QuestionResult.of(
+            results.add(QuestionResult.of(
                     submission, question, score, result, item.reason(), null,
                     item.needsManualReview()
-            );
-            questionResultRepository.save(qr);
+            ));
         }
+        questionResultRepository.saveAll(results);
 
         int totalScore = request.totalScore() == null ? 0 : request.totalScore();
         submission.complete(totalScore, gradedAt);
