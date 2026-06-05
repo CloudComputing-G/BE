@@ -2,6 +2,7 @@ package cloudproject.com.assignment.domain;
 
 import cloudproject.com.auth.domain.User;
 import cloudproject.com.classroom.domain.Classroom;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -53,6 +54,7 @@ public class Assignment {
     private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "assignment", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     @Builder.Default
     private List<Question> questions = new ArrayList<>();
 

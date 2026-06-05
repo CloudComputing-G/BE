@@ -1,5 +1,6 @@
 package cloudproject.com.assignment.domain;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,6 +17,7 @@ public class Question {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "assignment_id")
+    @JsonBackReference
     private Assignment assignment;
 
     @Column(columnDefinition = "TEXT")
@@ -31,9 +33,23 @@ public class Question {
     private Integer orderNum;
     private String questionType;
 
+    @Column(length = 50)
+    private String category;
+
+    @Column(length = 30)
+    private String detectedType;
+
     public void update(String answer, String gradingCriteria) {
         this.answer = answer;
         this.gradingCriteria = gradingCriteria;
+    }
+
+    public void updateCategory(String category) {
+        this.category = category;
+    }
+
+    public void updateDetectedType(String detectedType) {
+        this.detectedType = detectedType;
     }
 
     public void updateQuestionType(String questionType) {

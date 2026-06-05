@@ -86,6 +86,10 @@ public class GradingService {
         for (GradingResultRequest.QuestionResultItem item : request.questions()) {
             Question question = questionRepository.findById(item.questionId())
                     .orElseThrow(() -> new BusinessException(QUESTION_NOT_FOUND));
+
+            question.updateCategory(item.category());
+            question.updateDetectedType(item.detectedType());
+
             int score = item.score() == null ? 0 : item.score();
             int maxScore = question.getMaxScore() == null ? 0 : question.getMaxScore();
             String result = computeResult(score, maxScore);
@@ -100,7 +104,8 @@ public class GradingService {
             }
 
             QuestionResult qr = QuestionResult.of(
-                    submission, question, score, result, item.reason(), null
+                    submission, question, score, result, item.reason(), null,
+                    item.needsManualReview()
             );
             questionResultRepository.save(qr);
         }

@@ -122,6 +122,13 @@ public class GradingJobPublisher {
         payload.put("assignmentId", assignment.getAssignmentId());
         payload.put("title", assignment.getTitle());
         payload.put("subject", assignment.getSubject());
+        if (StringUtils.hasText(assignment.getProblemS3Key())) {
+            payload.put("problem", Map.of(
+                    "bucket", bucket,
+                    "key", assignment.getProblemS3Key(),
+                    "contentType", contentType(assignment.getProblemS3Key())
+            ));
+        }
         if (StringUtils.hasText(assignment.getAnswerS3Key())) {
             payload.put("answer", Map.of(
                     "bucket", bucket,

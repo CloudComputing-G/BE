@@ -13,6 +13,8 @@ public class QuestionResponse {
     private Integer maxScore;
     private Integer orderNum;
     private String questionType;
+    private String category;
+    private String detectedType;
 
     // 학생용 ( 정답 / 채점 기준 제외)
     public static QuestionResponse from(Question question) {
@@ -22,6 +24,8 @@ public class QuestionResponse {
         dto.maxScore = question.getMaxScore();
         dto.orderNum = question.getOrderNum();
         dto.questionType = question.getQuestionType();
+        dto.category = question.getCategory();
+        dto.detectedType = question.getDetectedType();
         return dto;
     }
     // 정답/채점기준 포함 (교사용)

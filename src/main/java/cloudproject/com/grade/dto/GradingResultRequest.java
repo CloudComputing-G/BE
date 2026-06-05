@@ -18,6 +18,9 @@ public record GradingResultRequest(
             Long questionId,
             Integer score,
             String reason,
+            String category,
+            String detectedType,
+            Boolean needsManualReview,
             String questionType
     ) {
     }
