@@ -62,6 +62,7 @@ public interface SubmissionRepository extends JpaRepository<Submission, Long> {
             select s from Submission s
             join fetch s.assignment a
             where s.student.userId = :studentId
+            order by s.submittedAt desc
             """)
     List<Submission> findAllByStudentId(@Param("studentId") Long studentId);
 
