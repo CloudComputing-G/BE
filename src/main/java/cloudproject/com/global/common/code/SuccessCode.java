@@ -28,7 +28,6 @@ public enum SuccessCode implements BaseCode {
     ASSIGNMENTS_FETCHED(HttpStatus.OK, "S020", "과제 목록 조회가 완료되었습니다."),
 
     // Grade
-    MY_SUBMISSIONS_FETCHED(HttpStatus.OK, "S100", "내 제출 목록을 조회했습니다."),
     SUBMISSION_RESULT_FETCH_SUCCESS(HttpStatus.OK, "S101", "제출물 채점 결과를 조회했습니다."),
     SUBMISSION_STATUS_FETCH_SUCCESS(HttpStatus.OK, "S102", "채점 상태를 조회했습니다."),
     REGRADE_REQUEST_SUCCESS(HttpStatus.OK, "S103", "재채점이 요청되었습니다."),
