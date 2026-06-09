@@ -5,7 +5,6 @@ import cloudproject.com.assignment.repository.QuestionRepository;
 import cloudproject.com.auth.domain.Role;
 import cloudproject.com.grade.domain.QuestionResult;
 import cloudproject.com.grade.domain.Submission;
-import cloudproject.com.grade.dto.MySubmissionResponse;
 import cloudproject.com.grade.dto.SubmissionResultResponse;
 import cloudproject.com.grade.dto.SubmissionStatusResponse;
 import cloudproject.com.grade.repository.QuestionResultRepository;
@@ -110,20 +109,6 @@ public class SubmissionResultService {
                 submission.getGradedAt(),
                 submission.getFailReason()
         );
-    }
-
-    @Transactional(readOnly = true)
-    public List<MySubmissionResponse> getMySubmissions(Long studentId) {
-        return submissionRepository.findAllByStudentId(studentId).stream()
-                .map(s -> new MySubmissionResponse(
-                        s.getSubmissionId(),
-                        s.getAssignment().getAssignmentId(),
-                        s.getAssignment().getTitle(),
-                        s.getGradingStatus(),
-                        s.getTotalScore(),
-                        s.getSubmittedAt()
-                ))
-                .toList();
     }
 
     private void validateAccess(Submission submission, Long currentUserId, Role currentRole) {
