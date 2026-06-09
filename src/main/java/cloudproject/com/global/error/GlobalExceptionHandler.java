@@ -73,7 +73,9 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     protected ResponseEntity<ApiResponse<Void>> handleUnexpectedException(Exception e) {
         log.error("Unexpected Error", e);
-        ErrorCode errorCode = ErrorCode.INTERNAL_SERVER_ERROR;
-        return ResponseEntity.status(errorCode.getHttpStatus()).body(ApiResponse.failure(errorCode));
+        String debugMsg = e.getClass().getSimpleName() + ": " + e.getMessage();
+        return ResponseEntity.status(500).body(
+                new ApiResponse<>(false, "C500", debugMsg, null, null)
+        );
     }
 }
