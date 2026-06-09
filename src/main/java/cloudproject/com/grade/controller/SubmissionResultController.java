@@ -2,6 +2,7 @@ package cloudproject.com.grade.controller;
 
 import cloudproject.com.auth.domain.Role;
 import cloudproject.com.auth.support.AuthenticationSupport;
+import cloudproject.com.grade.dto.MySubmissionResponse;
 import cloudproject.com.grade.dto.SubmissionResultResponse;
 import cloudproject.com.grade.dto.SubmissionStatusResponse;
 import cloudproject.com.grade.service.SubmissionResultService;
@@ -16,12 +17,24 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/submissions")
 @RequiredArgsConstructor
 public class SubmissionResultController {
 
     private final SubmissionResultService submissionResultService;
+
+    @GetMapping("/me")
+    public ResponseEntity<ApiResponse<List<MySubmissionResponse>>> getMySubmissions(
+            @AuthenticationPrincipal Long currentUserId
+    ) {
+        List<MySubmissionResponse> response = submissionResultService.getMySubmissions(currentUserId);
+        return ResponseEntity.ok(
+                ApiResponse.success(SuccessCode.MY_SUBMISSIONS_FETCHED, response)
+        );
+    }
 
     @GetMapping("/{sid}/results")
     public ResponseEntity<ApiResponse<SubmissionResultResponse>> getResults(

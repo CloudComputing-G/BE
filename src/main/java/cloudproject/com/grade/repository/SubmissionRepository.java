@@ -58,6 +58,14 @@ public interface SubmissionRepository extends JpaRepository<Submission, Long> {
     // 중복 제출 체크
     Optional<Submission> findByAssignment_AssignmentIdAndStudent_UserId(Long assignmentId, Long studentId);
 
+    @Query("""
+            select s from Submission s
+            join fetch s.assignment a
+            where s.student.userId = :studentId
+              and s.gradingStatus is not null
+            """)
+    List<Submission> findAllByStudentId(@Param("studentId") Long studentId);
+
     @Modifying
     @Query("update Submission s set s.gradingStatus = 'FAILED', s.failReason = :reason, s.gradedAt = current_timestamp where s.gradingStatus = 'PENDING'")
     int failAllPending(@Param("reason") String reason);
